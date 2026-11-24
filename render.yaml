@@ -23,7 +23,7 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
-        value: gemini-2.5-flash
+        value: gemini-3-flash-preview
       - key: AI_ASSIST_ANALYSIS
         value: "true"
       - key: ALLOW_EXTERNAL_AI_FOR_REAL_CASES

@@ -1,6 +1,7 @@
 import os
 import io
 import html
+import re
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List, Dict, Any
 from reportlab.lib.pagesizes import A4
@@ -19,52 +20,64 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import registerFontFamily
 
-# Register Unicode fonts (Noto Sans Devanagari for cross-platform Linux & Windows, Nirmala UI fallback, Consolas for hashes)
-FONT_NAME = "Helvetica"
-FONT_NAME_BOLD = "Helvetica-Bold"
+# Register Unicode fonts: NotoSans as DEFAULT Latin font, NotoSansDevanagari for Devanagari runs
+FONT_NAME = "NotoSans"
+FONT_NAME_BOLD = "NotoSans-Bold"
+DEV_FONT_NAME = "NotoSansDevanagari"
+DEV_FONT_NAME_BOLD = "NotoSansDevanagari-Bold"
 MONO_FONT = "Courier"
 
 def init_fonts():
-    global FONT_NAME, FONT_NAME_BOLD, MONO_FONT
+    global FONT_NAME, FONT_NAME_BOLD, DEV_FONT_NAME, DEV_FONT_NAME_BOLD, MONO_FONT
 
-    # 1. Bundled Noto Sans Devanagari (Cross-platform Linux & Windows, supports Devanagari + Latin)
     fonts_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "fonts"))
-    noto_reg = os.path.join(fonts_dir, "NotoSansDevanagari-Regular.ttf")
-    noto_bold = os.path.join(fonts_dir, "NotoSansDevanagari-Bold.ttf")
-    if os.path.exists(noto_reg):
+    ns_reg = os.path.join(fonts_dir, "NotoSans-Regular.ttf")
+    ns_bold = os.path.join(fonts_dir, "NotoSans-Bold.ttf")
+    dev_reg = os.path.join(fonts_dir, "NotoSansDevanagari-Regular.ttf")
+    dev_bold = os.path.join(fonts_dir, "NotoSansDevanagari-Bold.ttf")
+
+    # 1. Primary NotoSans (Default Latin font for English, numbers, symbols, and formatting)
+    if os.path.exists(ns_reg):
         try:
-            pdfmetrics.registerFont(TTFont("NotoSansDevanagari", noto_reg))
-            if os.path.exists(noto_bold):
-                pdfmetrics.registerFont(TTFont("NotoSansDevanagari-Bold", noto_bold))
+            pdfmetrics.registerFont(TTFont("NotoSans", ns_reg))
+            if os.path.exists(ns_bold):
+                pdfmetrics.registerFont(TTFont("NotoSans-Bold", ns_bold))
+                registerFontFamily("NotoSans", normal="NotoSans", bold="NotoSans-Bold", italic="NotoSans", boldItalic="NotoSans-Bold")
+                FONT_NAME = "NotoSans"
+                FONT_NAME_BOLD = "NotoSans-Bold"
+            else:
+                registerFontFamily("NotoSans", normal="NotoSans", bold="NotoSans", italic="NotoSans", boldItalic="NotoSans")
+                FONT_NAME = "NotoSans"
+                FONT_NAME_BOLD = "NotoSans"
+        except Exception:
+            FONT_NAME = "Helvetica"
+            FONT_NAME_BOLD = "Helvetica-Bold"
+    else:
+        FONT_NAME = "Helvetica"
+        FONT_NAME_BOLD = "Helvetica-Bold"
+
+    # 2. Bundled Noto Sans Devanagari (Hindi script typography)
+    if os.path.exists(dev_reg):
+        try:
+            pdfmetrics.registerFont(TTFont("NotoSansDevanagari", dev_reg))
+            if os.path.exists(dev_bold):
+                pdfmetrics.registerFont(TTFont("NotoSansDevanagari-Bold", dev_bold))
                 registerFontFamily("NotoSansDevanagari", normal="NotoSansDevanagari", bold="NotoSansDevanagari-Bold", italic="NotoSansDevanagari", boldItalic="NotoSansDevanagari-Bold")
-                FONT_NAME = "NotoSansDevanagari"
-                FONT_NAME_BOLD = "NotoSansDevanagari-Bold"
+                DEV_FONT_NAME = "NotoSansDevanagari"
+                DEV_FONT_NAME_BOLD = "NotoSansDevanagari-Bold"
             else:
                 registerFontFamily("NotoSansDevanagari", normal="NotoSansDevanagari", bold="NotoSansDevanagari", italic="NotoSansDevanagari", boldItalic="NotoSansDevanagari")
-                FONT_NAME = "NotoSansDevanagari"
-                FONT_NAME_BOLD = "NotoSansDevanagari"
+                DEV_FONT_NAME = "NotoSansDevanagari"
+                DEV_FONT_NAME_BOLD = "NotoSansDevanagari"
         except Exception:
             pass
 
-    # 2. Nirmala UI (Windows official font supporting Devanagari, Bengali, Tamil, Telugu, Latin, etc.)
-    if FONT_NAME == "Helvetica":
-        nirmala_ttc = "C:/Windows/Fonts/Nirmala.ttc"
-        if os.path.exists(nirmala_ttc):
-            try:
-                pdfmetrics.registerFont(TTFont("Nirmala", nirmala_ttc, subfontIndex=0))
-                pdfmetrics.registerFont(TTFont("Nirmala-Bold", nirmala_ttc, subfontIndex=1))
-                registerFontFamily("Nirmala", normal="Nirmala", bold="Nirmala-Bold", italic="Nirmala", boldItalic="Nirmala-Bold")
-                FONT_NAME = "Nirmala"
-                FONT_NAME_BOLD = "Nirmala-Bold"
-            except Exception:
-                pass
-
-    # 3. Monospace fonts for clean monospace hashes (Windows + Linux font paths)
+    # 3. Monospace fonts for clean monospace hashes (Linux + Windows font paths)
     mono_candidates = [
-        "C:/Windows/Fonts/consola.ttf",
-        "C:/Windows/Fonts/lucon.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
-        "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf"
+        "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
+        "C:/Windows/Fonts/consola.ttf",
+        "C:/Windows/Fonts/lucon.ttf"
     ]
     for mono_path in mono_candidates:
         if os.path.exists(mono_path):
@@ -76,31 +89,42 @@ def init_fonts():
             except Exception:
                 pass
 
-    # 4. Fallback to Arial or system sans if font is still Helvetica
-    if FONT_NAME == "Helvetica":
-        sans_candidates = [
-            ("C:/Windows/Fonts/arial.ttf", "C:/Windows/Fonts/arialbd.ttf"),
-            ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
-        ]
-        for sans_reg, sans_bd in sans_candidates:
-            if os.path.exists(sans_reg):
-                try:
-                    pdfmetrics.registerFont(TTFont("CustomSans", sans_reg))
-                    if os.path.exists(sans_bd):
-                        pdfmetrics.registerFont(TTFont("CustomSans-Bold", sans_bd))
-                        registerFontFamily("CustomSans", normal="CustomSans", bold="CustomSans-Bold", italic="CustomSans", boldItalic="CustomSans-Bold")
-                        FONT_NAME = "CustomSans"
-                        FONT_NAME_BOLD = "CustomSans-Bold"
-                    else:
-                        FONT_NAME = "CustomSans"
-                        FONT_NAME_BOLD = "CustomSans"
-                    break
-                except Exception:
-                    pass
-
 init_fonts()
 
 IST = timezone(timedelta(hours=5, minutes=30))
+
+# Matches contiguous Devanagari character sequences (U+0900-U+097F including dandas, plus U+A8E0-U+A8FF)
+DEVANAGARI_RUN_PATTERN = re.compile(
+    r'([\u0900-\u097F\uA8E0-\uA8FF]+(?:\s+[\u0900-\u097F\uA8E0-\uA8FF]+)*)'
+)
+
+def wrap_devanagari(text: str, is_bold: bool = False) -> str:
+    """
+    Wraps only Devanagari runs (U+0900-U+097F, danda characters, and Devanagari extended)
+    in <font name="NotoSansDevanagari">...</font> or bold variant.
+    Keeps English letters, numbers, punctuation, hashes, and URLs in the default Latin font (NotoSans).
+    Respects inline <b> / <strong> tags to select the bold font variant automatically.
+    """
+    if not text:
+        return ""
+
+    # Split on bold tags to accurately preserve bold styling across runs
+    parts = re.split(r'(<b>|</b>|<strong>|</strong>)', text, flags=re.IGNORECASE)
+    result = []
+    in_bold = is_bold
+    for part in parts:
+        low = part.lower()
+        if low in ('<b>', '<strong>'):
+            in_bold = True
+            result.append(part)
+        elif low in ('</b>', '</strong>'):
+            in_bold = is_bold
+            result.append(part)
+        else:
+            dev_font = DEV_FONT_NAME_BOLD if in_bold else DEV_FONT_NAME
+            wrapped = DEVANAGARI_RUN_PATTERN.sub(rf'<font name="{dev_font}">\1</font>', part)
+            result.append(wrapped)
+    return "".join(result)
 
 def wrap_unbroken_words(text: str, max_word_len: int = 80) -> str:
     """Break continuous strings longer than max_word_len to prevent table cell overflow without mangling 64-char hashes."""
@@ -116,21 +140,84 @@ def wrap_unbroken_words(text: str, max_word_len: int = 80) -> str:
             out.append(w)
     return " ".join(out)
 
-def safe_text(val: Any, max_len: Optional[int] = None) -> str:
-    """Escapes user and raw text to prevent ReportLab XML markup parsing errors."""
+def safe_text(val: Any, max_len: Optional[int] = None, is_bold: bool = False) -> str:
+    """
+    Escapes user and raw text to prevent ReportLab XML markup parsing errors,
+    breaks unbroken continuous strings, and wraps Devanagari runs in NotoSansDevanagari.
+    """
     if val is None:
         return ""
     s = str(val).replace("\x00", "")
     if max_len and len(s) > max_len:
         s = s[:max_len] + "... [Truncated for display]"
 
-    # If font is strictly fallback Helvetica (cannot render Unicode), safely convert
-    if FONT_NAME == "Helvetica":
-        s = s.encode("latin-1", "replace").decode("latin-1")
-
     # Wrap continuous unbroken tokens without mangling 64-character hashes
     s = wrap_unbroken_words(s, max_word_len=80)
-    return html.escape(s)
+    # HTML escape first so <, >, &, " don't break XML
+    s = html.escape(s)
+    # Wrap Devanagari runs with font tag AFTER html.escape
+    return wrap_devanagari(s, is_bold=is_bold)
+
+def canvas_draw_mixed_string(canv, x: float, y: float, text: str, font_size: float = 7.5, is_bold: bool = False, align: str = "left"):
+    """
+    Draws text directly on canvas choosing the font per string or run (NotoSans for Latin/numbers/symbols,
+    NotoSansDevanagari for Devanagari), since canvas drawing cannot use HTML markup tags.
+    """
+    latin_font = FONT_NAME_BOLD if is_bold else FONT_NAME
+    dev_font = DEV_FONT_NAME_BOLD if is_bold else DEV_FONT_NAME
+
+    registered = pdfmetrics.getRegisteredFontNames()
+    if latin_font not in registered:
+        latin_font = "Helvetica-Bold" if is_bold else "Helvetica"
+    if dev_font not in registered:
+        dev_font = latin_font
+
+    # If no Devanagari present, fast single-call draw
+    if not any('\u0900' <= ch <= '\u097F' or '\uA8E0' <= ch <= '\uA8FF' for ch in text):
+        canv.setFont(latin_font, font_size)
+        if align == "right":
+            canv.drawRightString(x, y, text)
+        elif align == "center":
+            canv.drawCentredString(x, y, text)
+        else:
+            canv.drawString(x, y, text)
+        return
+
+    # Split into runs of Devanagari vs Latin
+    runs = []
+    current_run = []
+    current_is_dev = None
+    for ch in text:
+        is_dev = ('\u0900' <= ch <= '\u097F' or '\uA8E0' <= ch <= '\uA8FF')
+        if current_is_dev is None or is_dev == current_is_dev:
+            current_run.append(ch)
+            current_is_dev = is_dev
+        else:
+            runs.append(("".join(current_run), current_is_dev))
+            current_run = [ch]
+            current_is_dev = is_dev
+    if current_run:
+        runs.append(("".join(current_run), current_is_dev))
+
+    total_width = 0
+    run_widths = []
+    for run_text, is_dev in runs:
+        fn = dev_font if is_dev else latin_font
+        w = pdfmetrics.stringWidth(run_text, fn, font_size)
+        run_widths.append(w)
+        total_width += w
+
+    cur_x = x
+    if align == "right":
+        cur_x = x - total_width
+    elif align == "center":
+        cur_x = x - (total_width / 2.0)
+
+    for (run_text, is_dev), w in zip(runs, run_widths):
+        fn = dev_font if is_dev else latin_font
+        canv.setFont(fn, font_size)
+        canv.drawString(cur_x, y, run_text)
+        cur_x += w
 
 class NumberedCanvas(canvas.Canvas):
     """Two-pass canvas for dynamic total page count, watermark, and footer."""
@@ -156,30 +243,27 @@ class NumberedCanvas(canvas.Canvas):
         # Watermark for Demo Data
         is_demo = getattr(self, "is_demo_report", False)
         if is_demo:
-            self.setFont(FONT_NAME_BOLD, 48)
             self.setFillColor(colors.HexColor("#CBD5E1"), alpha=0.25)
             self.translate(297, 420)
             self.rotate(45)
-            self.drawCentredString(0, 0, "DEMO EVALUATION DATA")
-            self.setFont(FONT_NAME_BOLD, 14)
-            self.drawCentredString(0, -30, "SYNTHETIC BENCHMARK RECORD")
+            canvas_draw_mixed_string(self, 0, 0, "DEMO EVALUATION DATA", font_size=48, is_bold=True, align="center")
+            canvas_draw_mixed_string(self, 0, -30, "SYNTHETIC BENCHMARK RECORD", font_size=14, is_bold=True, align="center")
             self.rotate(-45)
             self.translate(-297, -420)
 
         # Running Footer
-        footer_font = FONT_NAME if FONT_NAME in pdfmetrics.getRegisteredFontNames() else "Helvetica"
-        self.setFont(footer_font, 7.5)
         self.setFillColor(colors.HexColor("#64748B"))
         self.setStrokeColor(colors.HexColor("#E2E8F0"))
         self.setLineWidth(0.5)
         self.line(36, 32, 559, 32)
 
-        self.drawString(
-            36, 22,
-            "LINKSHIELD AI - Investigation Support Report | Confidential - Law Enforcement & Cyber Cell Use"
+        canvas_draw_mixed_string(
+            self, 36, 22,
+            "LINKSHIELD AI - Investigation Support Report | Confidential - Law Enforcement & Cyber Cell Use",
+            font_size=7.5, is_bold=False, align="left"
         )
         page_str = f"Page {self._pageNumber} of {page_count}"
-        self.drawRightString(559, 22, page_str)
+        canvas_draw_mixed_string(self, 559, 22, page_str, font_size=7.5, is_bold=False, align="right")
 
         self.restoreState()
 
@@ -323,9 +407,9 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
     status_html = "<font color='#F87171'><b>[DEMO EVALUATION DATA]</b></font>" if is_demo else "<font color='#38BDF8'><b>[OFFICIAL INVESTIGATION DOSSIER]</b></font>"
 
     header_cells = [
-        [Paragraph("LINKSHIELD AI &mdash; CYBER CRIME INVESTIGATION REPORT", header_title_style)],
-        [Paragraph("Detect. Explain. Investigate. Protect.", header_sub_style)],
-        [Paragraph(f"Forensic Classification: {status_html}", header_status_style)]
+        [Paragraph(wrap_devanagari("LINKSHIELD AI &mdash; CYBER CRIME INVESTIGATION REPORT", is_bold=True), header_title_style)],
+        [Paragraph(wrap_devanagari("Detect. Explain. Investigate. Protect.", is_bold=True), header_sub_style)],
+        [Paragraph(wrap_devanagari(f"Forensic Classification: {status_html}"), header_status_style)]
     ]
     header_table = Table(header_cells, colWidths=[CONTENT_WIDTH])
     header_table.setStyle(TableStyle([
@@ -340,7 +424,7 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
     story.append(Spacer(1, 7))
 
     # 2. CASE METADATA & RISK BADGE
-    case_id = safe_text(case_data.get("id", case_data.get("case_id", "UNKNOWN")))
+    case_id = safe_text(case_data.get("id", case_data.get("case_id", "UNKNOWN")), is_bold=True)
     subject = safe_text(case_data.get("subject", "Unspecified Incident"))
     input_type = safe_text(case_data.get("input_type", "message")).upper()
     category = safe_text(case_data.get("category", "general")).replace("_", " ").upper()
@@ -376,11 +460,11 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
 
     # Clean 2-column key-value pairs for metadata
     meta_sub_table = Table([
-        [Paragraph("Case Reference ID:", meta_key_style), Paragraph(f"<b>{case_id}</b>", meta_val_style)],
-        [Paragraph("Incident Subject:", meta_key_style), Paragraph(subject, meta_val_style)],
-        [Paragraph("Input / Category:", meta_key_style), Paragraph(f"{input_type} &nbsp;|&nbsp; {category}", meta_val_style)],
-        [Paragraph("Captured Timestamp:", meta_key_style), Paragraph(cap_time_str, meta_val_style)],
-        [Paragraph("Report Generated:", meta_key_style), Paragraph(gen_time_str, meta_val_style)],
+        [Paragraph(wrap_devanagari("Case Reference ID:", is_bold=True), meta_key_style), Paragraph(f"<b>{case_id}</b>", meta_val_style)],
+        [Paragraph(wrap_devanagari("Incident Subject:", is_bold=True), meta_key_style), Paragraph(subject, meta_val_style)],
+        [Paragraph(wrap_devanagari("Input / Category:", is_bold=True), meta_key_style), Paragraph(f"{input_type} &nbsp;|&nbsp; {category}", meta_val_style)],
+        [Paragraph(wrap_devanagari("Captured Timestamp:", is_bold=True), meta_key_style), Paragraph(cap_time_str, meta_val_style)],
+        [Paragraph(wrap_devanagari("Report Generated:", is_bold=True), meta_key_style), Paragraph(gen_time_str, meta_val_style)],
     ], colWidths=[105, 275])
     meta_sub_table.setStyle(TableStyle([
         ("TOPPADDING", (0, 0), (-1, -1), 1.5),
@@ -407,11 +491,15 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
         alignment=1
     )
 
+    risk_badge_title = wrap_devanagari("ASSESSED THREAT LEVEL", is_bold=True)
+    risk_badge_level = wrap_devanagari(f"{risk_level} RISK", is_bold=True)
+    risk_sub_text = wrap_devanagari("Rule-based explainable score")
+
     risk_sub_table = Table([
-        [Paragraph("ASSESSED THREAT LEVEL", risk_badge_title_style)],
-        [Paragraph(f"{risk_level} RISK", risk_badge_level_style)],
+        [Paragraph(risk_badge_title, risk_badge_title_style)],
+        [Paragraph(risk_badge_level, risk_badge_level_style)],
         [Paragraph(f"Score: {risk_score} / 100", risk_score_style)],
-        [Paragraph("Rule-based explainable score", risk_sub_style)]
+        [Paragraph(risk_sub_text, risk_sub_style)]
     ], colWidths=[130])
     risk_sub_table.setStyle(TableStyle([
         ("TOPPADDING", (0, 0), (-1, -1), 2),
@@ -446,12 +534,12 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
     if len(raw_content) > 1200:
         safe_excerpt += "... [Truncated for display]"
 
-    story.append(Paragraph("<b>1. Chain of Custody & Evidence Verification</b>", sec_head_style))
+    story.append(Paragraph(wrap_devanagari("<b>1. Chain of Custody & Evidence Verification</b>", is_bold=True), sec_head_style))
     story.append(Spacer(1, 2.5))
 
     evidence_table = Table([
         [Paragraph(f"<b>SHA-256 Fingerprint:</b> &nbsp;<font face='{MONO_FONT}'>{sha256_hash}</font>", excerpt_style)],
-        [Paragraph(f"<b>Submitted Content Excerpt:</b><br/>{safe_excerpt}", excerpt_style)]
+        [Paragraph(wrap_devanagari(f"<b>Submitted Content Excerpt:</b><br/>{safe_excerpt}"), excerpt_style)]
     ], colWidths=[CONTENT_WIDTH])
     evidence_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#F1F5F9")),
@@ -468,19 +556,19 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
 
     # 4. EXPLAINABLE THREAT INDICATORS
     indicators = case_data.get("indicators", [])
-    story.append(Paragraph(f"<b>2. Explainable Threat Indicators ({len(indicators)})</b>", sec_head_style))
+    story.append(Paragraph(wrap_devanagari(f"<b>2. Explainable Threat Indicators ({len(indicators)})</b>", is_bold=True), sec_head_style))
     story.append(Spacer(1, 2.5))
 
     if indicators:
         ind_data = [
             [
-                Paragraph("<b>Indicator Name</b>", table_th_style),
-                Paragraph("<b>Points</b>", table_th_style),
-                Paragraph("<b>Forensic Explanation / Why Flagged</b>", table_th_style)
+                Paragraph(wrap_devanagari("<b>Indicator Name</b>", is_bold=True), table_th_style),
+                Paragraph(wrap_devanagari("<b>Points</b>", is_bold=True), table_th_style),
+                Paragraph(wrap_devanagari("<b>Forensic Explanation / Why Flagged</b>", is_bold=True), table_th_style)
             ]
         ]
         for ind in indicators:
-            ind_name = safe_text(ind.get("name", "Indicator"))
+            ind_name = safe_text(ind.get("name", "Indicator"), is_bold=True)
             ind_pts = f"+{ind.get('points', 0)}"
             ind_exp = safe_text(ind.get("explanation", ""))
             ind_data.append([
@@ -502,28 +590,28 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
         ]))
         story.append(ind_table)
     else:
-        story.append(Paragraph("<i>No suspicious threat indicators triggered for this record.</i>", table_td_style))
+        story.append(Paragraph(wrap_devanagari("<i>No suspicious threat indicators triggered for this record.</i>"), table_td_style))
 
     story.append(Spacer(1, 7))
 
     # 5. EXTRACTED NETWORK IDENTIFIERS
     identifiers = case_data.get("identifiers", [])
-    story.append(Paragraph(f"<b>3. Extracted Network & Financial Identifiers ({len(identifiers)})</b>", sec_head_style))
+    story.append(Paragraph(wrap_devanagari(f"<b>3. Extracted Network & Financial Identifiers ({len(identifiers)})</b>", is_bold=True), sec_head_style))
     story.append(Spacer(1, 2.5))
 
     if identifiers:
         ident_data = [
             [
-                Paragraph("<b>Identifier Type</b>", table_th_style),
-                Paragraph("<b>Extracted Value</b>", table_th_style)
+                Paragraph(wrap_devanagari("<b>Identifier Type</b>", is_bold=True), table_th_style),
+                Paragraph(wrap_devanagari("<b>Extracted Value</b>", is_bold=True), table_th_style)
             ]
         ]
         for ident in identifiers:
-            itype = safe_text(ident.get("type", "unknown")).upper()
+            itype = safe_text(ident.get("type", "unknown"), is_bold=True).upper()
             ival = safe_text(ident.get("value", ""))
             ident_data.append([
                 Paragraph(f"<b>{itype}</b>", table_td_bold_style),
-                Paragraph(ival, table_td_style)  # Uses FONT_NAME (Nirmala), NEVER Courier, so no black boxes!
+                Paragraph(ival, table_td_style)
             ])
 
         ident_table = Table(ident_data, colWidths=[140, 383])
@@ -539,44 +627,44 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
         ]))
         story.append(ident_table)
     else:
-        story.append(Paragraph("<i>No actionable phone numbers, UPI IDs, domains or wallets found.</i>", table_td_style))
+        story.append(Paragraph(wrap_devanagari("<i>No actionable phone numbers, UPI IDs, domains or wallets found.</i>"), table_td_style))
 
     story.append(Spacer(1, 7))
 
     # 6. CROSS-CASE LINKAGES & INTELLIGENCE
     related_cases = case_data.get("related_cases", [])
     similarity_links = case_data.get("similarity_links", [])
-    story.append(Paragraph("<b>4. Cross-Case Linkages & Campaign Intelligence</b>", sec_head_style))
+    story.append(Paragraph(wrap_devanagari("<b>4. Cross-Case Linkages & Campaign Intelligence</b>", is_bold=True), sec_head_style))
     story.append(Spacer(1, 2.5))
 
     if not related_cases and not similarity_links:
-        story.append(Paragraph("<i>No cross-case identifier linkages or near-duplicate content discovered.</i>", table_td_style))
+        story.append(Paragraph(wrap_devanagari("<i>No cross-case identifier linkages or near-duplicate content discovered.</i>"), table_td_style))
     else:
         link_rows = [
             [
-                Paragraph("<b>Linked Case</b>", table_th_style),
-                Paragraph("<b>Link Type / Reason</b>", table_th_style),
-                Paragraph("<b>Subject / Risk</b>", table_th_style)
+                Paragraph(wrap_devanagari("<b>Linked Case</b>", is_bold=True), table_th_style),
+                Paragraph(wrap_devanagari("<b>Link Type / Reason</b>", is_bold=True), table_th_style),
+                Paragraph(wrap_devanagari("<b>Subject / Risk</b>", is_bold=True), table_th_style)
             ]
         ]
         for rc in related_cases:
-            rc_id = safe_text(rc.get("case_id"))
+            rc_id = safe_text(rc.get("case_id"), is_bold=True)
             shared_ids = safe_text(", ".join(rc.get("shared_identifiers", [])))
             rc_subj = safe_text(rc.get("subject", ""))
             rc_risk = safe_text(rc.get("risk_level", ""))
             link_rows.append([
                 Paragraph(f"<b>{rc_id}</b>", table_td_bold_style),
-                Paragraph(f"Shared Identifier: {shared_ids}", table_td_style),
-                Paragraph(f"{rc_subj} ({rc_risk})", table_td_style)
+                Paragraph(wrap_devanagari(f"Shared Identifier: {shared_ids}"), table_td_style),
+                Paragraph(wrap_devanagari(f"{rc_subj} ({rc_risk})"), table_td_style)
             ])
 
         for sl in similarity_links:
-            sl_id = safe_text(sl.get("case_id"))
+            sl_id = safe_text(sl.get("case_id"), is_bold=True)
             sim_pct = int(sl.get("similarity", 0) * 100)
             sl_subj = safe_text(sl.get("subject", ""))
             link_rows.append([
                 Paragraph(f"<b>{sl_id}</b>", table_td_bold_style),
-                Paragraph(f"Near-Duplicate Content: {sim_pct}% Match", table_td_style),
+                Paragraph(wrap_devanagari(f"Near-Duplicate Content: {sim_pct}% Match"), table_td_style),
                 Paragraph(sl_subj, table_td_style)
             ])
 
@@ -598,7 +686,7 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
     # 7. INVESTIGATOR NOTES
     notes_raw = case_data.get("investigator_notes")
     notes = safe_text(notes_raw if notes_raw else "No official investigator notes recorded for this case.", max_len=1500)
-    story.append(Paragraph("<b>5. Investigator Notes & Police Remarks</b>", sec_head_style))
+    story.append(Paragraph(wrap_devanagari("<b>5. Investigator Notes & Police Remarks</b>", is_bold=True), sec_head_style))
     story.append(Spacer(1, 2.5))
 
     notes_table = Table([[Paragraph(notes, notes_style)]], colWidths=[CONTENT_WIDTH])
@@ -624,7 +712,7 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
     sec_rec_num = 6
     if ai_op and isinstance(ai_op, dict) and ai_op.get("status"):
         sec_rec_num = 7
-        story.append(Paragraph("<b>6. AI Second Opinion (Advisory)</b>", sec_head_style))
+        story.append(Paragraph(wrap_devanagari("<b>6. AI Second Opinion (Advisory)</b>", is_bold=True), sec_head_style))
         story.append(Spacer(1, 2.5))
 
         status = ai_op.get("status", "ok")
@@ -648,7 +736,7 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
         else:
             opinion_html = f"<b>Status:</b> {safe_text(ai_op.get('error', 'AI second opinion unavailable'))}"
 
-        op_table = Table([[Paragraph(opinion_html, notes_style)]], colWidths=[CONTENT_WIDTH])
+        op_table = Table([[Paragraph(wrap_devanagari(opinion_html), notes_style)]], colWidths=[CONTENT_WIDTH])
         op_table.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#F8FAFC")),
             ("BOX", (0, 0), (-1, -1), 1, colors.HexColor("#CBD5E1")),
@@ -666,7 +754,7 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
         from app.risk.engine import get_safety_recommendations
         recommendations = get_safety_recommendations(risk_level)
 
-    story.append(Paragraph(f"<b>{sec_rec_num}. Actionable Safety Recommendations</b>", sec_head_style))
+    story.append(Paragraph(wrap_devanagari(f"<b>{sec_rec_num}. Actionable Safety Recommendations</b>", is_bold=True), sec_head_style))
     story.append(Spacer(1, 2.5))
 
     rec_items = "".join([f"&bull;&nbsp; {safe_text(r)}<br/>" for r in recommendations])
@@ -689,7 +777,7 @@ def generate_case_pdf_report(case_data: Dict[str, Any]) -> bytes:
         "Detection scores reflect pattern matching against known fraud indicators and do not constitute legal proof. "
         "Generated by LINKSHIELD AI &mdash; Detect. Explain. Investigate. Protect."
     )
-    story.append(Paragraph(disclaimer_text, disclaimer_style))
+    story.append(Paragraph(wrap_devanagari(disclaimer_text), disclaimer_style))
 
     def on_page_setup(canvas_obj, document):
         canvas_obj.is_demo_report = is_demo
