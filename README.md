@@ -23,6 +23,22 @@
 
 ---
 
+## 🌐 Deployed Version (Live Cloud Demo)
+
+LinkShield AI is configured for cloud deployment with the frontend on Vercel and the backend on Render.
+
+* **Live Web Portal (Vercel):** `https://your-app.vercel.app` *(Placeholder - update with your deployed URL)*
+* **Backend API & Health Check (Render):** `https://your-backend.onrender.com/api/health` *(Placeholder - update with your deployed URL)*
+* **Deployment Guide:** See [DEPLOYMENT.md](file:///c:/My_Files/LinkShield/DEPLOYMENT.md) for full step-by-step setup and environment configuration.
+
+> **Evaluation Credentials (Demo Only, Synthetic Data):**
+> * **Officer Workstation:** Username `officer_sharma` / Password `Officer@Shield2026`
+> * **Citizen Portal:** Username `citizen_demo` / Password `Citizen@Shield2026` *(or click "Sign Up" to create a new citizen account)*
+> 
+> *Note: These credentials access an isolated, synthetic evaluation dataset. Citizen and Officer operational interfaces and permissions are strictly enforced on the server.*
+
+---
+
 ## 🏛️ System Architecture
 
 ```mermaid

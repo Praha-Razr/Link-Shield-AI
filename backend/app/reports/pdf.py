@@ -19,53 +19,84 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import registerFontFamily
 
-# Register Unicode fonts (Nirmala UI for Indic & Latin scripts, Consolas for hashes)
+# Register Unicode fonts (Noto Sans Devanagari for cross-platform Linux & Windows, Nirmala UI fallback, Consolas for hashes)
 FONT_NAME = "Helvetica"
 FONT_NAME_BOLD = "Helvetica-Bold"
 MONO_FONT = "Courier"
 
 def init_fonts():
     global FONT_NAME, FONT_NAME_BOLD, MONO_FONT
-    # 1. Nirmala UI (Windows official font supporting Devanagari, Bengali, Tamil, Telugu, Latin, etc.)
-    nirmala_ttc = "C:/Windows/Fonts/Nirmala.ttc"
-    if os.path.exists(nirmala_ttc):
+
+    # 1. Bundled Noto Sans Devanagari (Cross-platform Linux & Windows, supports Devanagari + Latin)
+    fonts_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "fonts"))
+    noto_reg = os.path.join(fonts_dir, "NotoSansDevanagari-Regular.ttf")
+    noto_bold = os.path.join(fonts_dir, "NotoSansDevanagari-Bold.ttf")
+    if os.path.exists(noto_reg):
         try:
-            pdfmetrics.registerFont(TTFont("Nirmala", nirmala_ttc, subfontIndex=0))
-            pdfmetrics.registerFont(TTFont("Nirmala-Bold", nirmala_ttc, subfontIndex=1))
-            registerFontFamily("Nirmala", normal="Nirmala", bold="Nirmala-Bold", italic="Nirmala", boldItalic="Nirmala-Bold")
-            FONT_NAME = "Nirmala"
-            FONT_NAME_BOLD = "Nirmala-Bold"
+            pdfmetrics.registerFont(TTFont("NotoSansDevanagari", noto_reg))
+            if os.path.exists(noto_bold):
+                pdfmetrics.registerFont(TTFont("NotoSansDevanagari-Bold", noto_bold))
+                registerFontFamily("NotoSansDevanagari", normal="NotoSansDevanagari", bold="NotoSansDevanagari-Bold", italic="NotoSansDevanagari", boldItalic="NotoSansDevanagari-Bold")
+                FONT_NAME = "NotoSansDevanagari"
+                FONT_NAME_BOLD = "NotoSansDevanagari-Bold"
+            else:
+                registerFontFamily("NotoSansDevanagari", normal="NotoSansDevanagari", bold="NotoSansDevanagari", italic="NotoSansDevanagari", boldItalic="NotoSansDevanagari")
+                FONT_NAME = "NotoSansDevanagari"
+                FONT_NAME_BOLD = "NotoSansDevanagari"
         except Exception:
             pass
 
-    # 2. Consolas for clean monospace hashes
-    for mono_path in ["C:/Windows/Fonts/consola.ttf", "C:/Windows/Fonts/lucon.ttf"]:
+    # 2. Nirmala UI (Windows official font supporting Devanagari, Bengali, Tamil, Telugu, Latin, etc.)
+    if FONT_NAME == "Helvetica":
+        nirmala_ttc = "C:/Windows/Fonts/Nirmala.ttc"
+        if os.path.exists(nirmala_ttc):
+            try:
+                pdfmetrics.registerFont(TTFont("Nirmala", nirmala_ttc, subfontIndex=0))
+                pdfmetrics.registerFont(TTFont("Nirmala-Bold", nirmala_ttc, subfontIndex=1))
+                registerFontFamily("Nirmala", normal="Nirmala", bold="Nirmala-Bold", italic="Nirmala", boldItalic="Nirmala-Bold")
+                FONT_NAME = "Nirmala"
+                FONT_NAME_BOLD = "Nirmala-Bold"
+            except Exception:
+                pass
+
+    # 3. Monospace fonts for clean monospace hashes (Windows + Linux font paths)
+    mono_candidates = [
+        "C:/Windows/Fonts/consola.ttf",
+        "C:/Windows/Fonts/lucon.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf"
+    ]
+    for mono_path in mono_candidates:
         if os.path.exists(mono_path):
             try:
-                fid = "Consolas" if "consola" in mono_path else "LucidaConsole"
+                fid = "Consolas" if "consola" in mono_path.lower() else "MonoFont"
                 pdfmetrics.registerFont(TTFont(fid, mono_path))
                 MONO_FONT = fid
                 break
             except Exception:
                 pass
 
-    # 3. Fallback to Arial if Nirmala not found
+    # 4. Fallback to Arial or system sans if font is still Helvetica
     if FONT_NAME == "Helvetica":
-        arial_ttf = "C:/Windows/Fonts/arial.ttf"
-        arial_bd = "C:/Windows/Fonts/arialbd.ttf"
-        if os.path.exists(arial_ttf):
-            try:
-                pdfmetrics.registerFont(TTFont("Arial", arial_ttf))
-                if os.path.exists(arial_bd):
-                    pdfmetrics.registerFont(TTFont("Arial-Bold", arial_bd))
-                    registerFontFamily("Arial", normal="Arial", bold="Arial-Bold", italic="Arial", boldItalic="Arial-Bold")
-                    FONT_NAME = "Arial"
-                    FONT_NAME_BOLD = "Arial-Bold"
-                else:
-                    FONT_NAME = "Arial"
-                    FONT_NAME_BOLD = "Arial"
-            except Exception:
-                pass
+        sans_candidates = [
+            ("C:/Windows/Fonts/arial.ttf", "C:/Windows/Fonts/arialbd.ttf"),
+            ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
+        ]
+        for sans_reg, sans_bd in sans_candidates:
+            if os.path.exists(sans_reg):
+                try:
+                    pdfmetrics.registerFont(TTFont("CustomSans", sans_reg))
+                    if os.path.exists(sans_bd):
+                        pdfmetrics.registerFont(TTFont("CustomSans-Bold", sans_bd))
+                        registerFontFamily("CustomSans", normal="CustomSans", bold="CustomSans-Bold", italic="CustomSans", boldItalic="CustomSans-Bold")
+                        FONT_NAME = "CustomSans"
+                        FONT_NAME_BOLD = "CustomSans-Bold"
+                    else:
+                        FONT_NAME = "CustomSans"
+                        FONT_NAME_BOLD = "CustomSans"
+                    break
+                except Exception:
+                    pass
 
 init_fonts()
 

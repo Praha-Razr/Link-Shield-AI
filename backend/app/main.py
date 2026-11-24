@@ -71,36 +71,110 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Create tables if not present
-Base.metadata.create_all(bind=engine)
-
-# Auto-migrate columns for existing SQLite databases
-try:
-    with engine.connect() as conn:
-        result = conn.execute(text("PRAGMA table_info(cases)")).fetchall()
-        cols = [r[1] for r in result]
-        if "submitted_by" not in cols:
-            conn.execute(text("ALTER TABLE cases ADD COLUMN submitted_by VARCHAR(36) REFERENCES users(id)"))
-            conn.commit()
-except Exception as _schema_err:
-    logger.warning(f"Schema migration check: {_schema_err}")
-
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description="LINKSHIELD AI - Scam Message & Phishing Link Detection with Fraudulent Website Analysis"
 )
 
-# CORS configuration
+# CORS configuration supporting localhost and deployed Vercel origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_origin_regex=r"^(https?://(localhost|127\.0\.0\.1)(:\d+)?|https://.*\.vercel\.app)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["Content-Disposition"]
 )
+
+@app.on_event("startup")
+def on_app_startup():
+    """
+    Production startup validator, table creator, schema migrator,
+    account seeder, and optional demo data loader.
+    """
+    # 1. Enforce strong SECRET_KEY in production environments
+    INSECURE_KEYS = {
+        "your-secret-key-replace-in-production",
+        "linkshield-enterprise-auth-secret-key-production-2026",
+        "changeme",
+        "secret",
+        ""
+    }
+    if settings.IS_PRODUCTION:
+        current_key = (settings.SECRET_KEY or "").strip()
+        if not current_key or current_key in INSECURE_KEYS or len(current_key) < 16:
+            raise RuntimeError(
+                "CRITICAL STARTUP FAILURE: In production, SECRET_KEY must be configured as a strong, "
+                "random secret (at least 16 characters) and cannot use default placeholders. "
+                "Please configure SECRET_KEY in your Render environment variables (e.g. openssl rand -hex 32)."
+            )
+
+    # 2. Ensure database tables exist
+    Base.metadata.create_all(bind=engine)
+
+    # 3. Idempotent schema migrations for existing databases
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("PRAGMA table_info(cases)")).fetchall()
+            cols = [r[1] for r in result]
+            if "submitted_by" not in cols:
+                conn.execute(text("ALTER TABLE cases ADD COLUMN submitted_by VARCHAR(36) REFERENCES users(id)"))
+                conn.commit()
+    except Exception as _schema_err:
+        logger.warning(f"Schema migration check: {_schema_err}")
+
+    # 4. Idempotently seed officer, admin and citizen demo accounts
+    try:
+        import sys
+        from pathlib import Path
+        backend_dir = str(Path(__file__).resolve().parent.parent)
+        if backend_dir not in sys.path:
+            sys.path.insert(0, backend_dir)
+        from seed_users import seed_users
+        seed_users()
+    except Exception as _seed_err:
+        logger.error(f"Failed to seed default accounts on startup: {_seed_err}", exc_info=True)
+
+    # 5. Automatically load synthetic demo dataset if enabled and database is empty
+    if settings.AUTO_LOAD_DEMO_DATA:
+        try:
+            from app.database import SessionLocal
+            with SessionLocal() as db:
+                case_count = db.query(Case).count()
+                if case_count == 0 and settings.DEMO_DATASET_PATH.exists():
+                    logger.info("AUTO_LOAD_DEMO_DATA enabled on empty database. Loading 44 synthetic demo cases...")
+                    with open(settings.DEMO_DATASET_PATH, "r", encoding="utf-8") as f:
+                        records = json.load(f)
+                    loaded_count = 0
+                    for rec in records:
+                        cid = rec["case_id"]
+                        if db.query(Case).filter(Case.id == cid).first():
+                            continue
+                        input_type = rec.get("input_type", "message")
+                        content = rec.get("submitted_content", "")
+                        subject = f"DEMO: {rec.get('category', 'sample').replace('_', ' ').title()}"
+
+                        if input_type == "message":
+                            analysis_data = analyze_message_content(content, subject=subject)
+                        elif input_type == "url":
+                            analysis_data = analyze_url_target(content, subject=subject, perform_live_check=False)
+                        elif input_type == "website":
+                            analysis_data = analyze_website_content(html_content=content, subject=subject)
+                        else:
+                            analysis_data = analyze_message_content(content, subject=subject)
+
+                        save_case_with_relations(
+                            db=db,
+                            analysis_data=analysis_data,
+                            is_demo=True,
+                            override_case_id=cid
+                        )
+                        loaded_count += 1
+                    logger.info(f"Successfully auto-loaded {loaded_count} demo cases on startup.")
+        except Exception as _auto_load_err:
+            logger.error(f"Failed to auto-load demo dataset on startup: {_auto_load_err}", exc_info=True)
 
 def format_case_detail(case: Case, db: Session) -> CaseDetailResponse:
     # Indicators
@@ -182,12 +256,30 @@ def format_case_detail(case: Case, db: Session) -> CaseDetailResponse:
         ai_second_opinion=ai_opinion_data
     )
 
+def _get_cookie_options() -> dict:
+    """
+    Returns cookie security flags. Over HTTPS / in production, uses SameSite=None; Secure
+    to allow cross-origin auth between Vercel and Render while still supporting Bearer token.
+    In local development, uses SameSite=Lax and secure=False for plain HTTP.
+    """
+    if settings.SECURE_COOKIES:
+        return {"samesite": "none", "secure": True}
+    return {"samesite": "lax", "secure": False}
+
 @app.get("/api/health")
-def health_check():
+def health_check(db: Session = Depends(get_db)):
+    db_status = "connected"
+    try:
+        db.execute(text("SELECT 1")).scalar()
+    except Exception as e:
+        db_status = f"unhealthy: {str(e)}"
+
     return {
         "status": "ok",
         "app": settings.PROJECT_NAME,
         "version": settings.VERSION,
+        "database": db_status,
+        "gemini_mode": "enhanced" if settings.GEMINI_API_KEY else "basic",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
@@ -226,11 +318,13 @@ def register_user_endpoint(
     db.refresh(new_user)
 
     token = create_access_token(data={"sub": new_user.id, "role": new_user.role, "username": new_user.username})
+    cookie_opts = _get_cookie_options()
     response.set_cookie(
         key="access_token",
         value=token,
         httponly=True,
-        samesite="lax",
+        samesite=cookie_opts["samesite"],
+        secure=cookie_opts["secure"],
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     return TokenResponse(
@@ -247,11 +341,13 @@ def login_user_endpoint(
 ):
     user = authenticate_user(db, req.username, req.password)
     token = create_access_token(data={"sub": user.id, "role": user.role, "username": user.username})
+    cookie_opts = _get_cookie_options()
     response.set_cookie(
         key="access_token",
         value=token,
         httponly=True,
-        samesite="lax",
+        samesite=cookie_opts["samesite"],
+        secure=cookie_opts["secure"],
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     return TokenResponse(
@@ -262,7 +358,12 @@ def login_user_endpoint(
 
 @app.post("/api/auth/logout")
 def logout_user_endpoint(response: Response):
-    response.delete_cookie(key="access_token", samesite="lax")
+    cookie_opts = _get_cookie_options()
+    response.delete_cookie(
+        key="access_token",
+        samesite=cookie_opts["samesite"],
+        secure=cookie_opts["secure"]
+    )
     return {"status": "success", "message": "Logged out successfully"}
 
 @app.get("/api/auth/me", response_model=UserResponse)

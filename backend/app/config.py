@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ROOT_DIR = BASE_DIR.parent
 DATA_DIR = ROOT_DIR / "data"
 
-# Auto-load backend/.env if it exists
+# Auto-load backend/.env if it exists (does not override explicitly set environment variables)
 _env_file = BASE_DIR / ".env"
 if _env_file.exists():
     with open(_env_file, "r", encoding="utf-8") as _f:
@@ -14,23 +14,55 @@ if _env_file.exists():
             _line = _line.strip()
             if _line and not _line.startswith("#") and "=" in _line:
                 _k, _v = _line.split("=", 1)
-                os.environ[_k.strip()] = _v.strip().strip("'\"")
+                _k_clean = _k.strip()
+                if _k_clean not in os.environ:
+                    os.environ[_k_clean] = _v.strip().strip("'\"")
+
+def _get_database_url() -> str:
+    db_path = os.getenv("DB_PATH", "").strip()
+    if db_path:
+        return f"sqlite:///{db_path}"
+    return os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR}/linkshield.db")
+
+def _get_cors_origins() -> list[str]:
+    origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
+    frontend_origins = os.getenv("FRONTEND_ORIGINS", "")
+    if frontend_origins:
+        for item in frontend_origins.split(","):
+            cleaned = item.strip().rstrip("/")
+            if cleaned and cleaned not in origins:
+                origins.append(cleaned)
+    return origins
+
+_is_prod = (
+    os.getenv("RENDER") is not None
+    or os.getenv("ENVIRONMENT", "").lower() in ("production", "prod")
+)
 
 class Settings(BaseModel):
     PROJECT_NAME: str = "LinkShield AI"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api"
     
+    # Environment & Deployment
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development").lower()
+    IS_PRODUCTION: bool = _is_prod
+    SECURE_COOKIES: bool = os.getenv("SECURE_COOKIES", "true" if _is_prod else "false").lower() in ("true", "1", "yes")
+
     # Database
-    DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR}/linkshield.db")
+    DATABASE_URL: str = _get_database_url()
+    AUTO_LOAD_DEMO_DATA: bool = os.getenv("AUTO_LOAD_DEMO_DATA", "false").lower() in ("true", "1", "yes")
     
     # CORS
-    CORS_ORIGINS: list[str] = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
+    FRONTEND_ORIGINS: str = os.getenv("FRONTEND_ORIGINS", "")
+    CORS_ORIGINS: list[str] = _get_cors_origins()
     
     # Safe Fetcher / SSRF Protection
     MAX_REDIRECT_HOPS: int = 5

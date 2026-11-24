@@ -96,7 +96,10 @@ def test_assistant_fallback_no_match(client):
     assert data["answer"] == "No supporting records found in the database."
     assert data["case_ids"] == []
 
-def test_assistant_enhanced_fallback(client):
+from app.config import settings
+
+def test_assistant_enhanced_fallback(client, monkeypatch):
+    monkeypatch.setattr(settings, "GEMINI_API_KEY", "")
     # Without API key, should gracefully serve rule-based response
     res = client.post("/api/assistant/ask", json={
         "question": "Why was case DEMO-011 classified as high risk?",

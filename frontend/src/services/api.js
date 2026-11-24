@@ -1,6 +1,7 @@
 const getApiBase = () => {
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
+  const envBase = import.meta.env.VITE_API_BASE_URL;
+  if (envBase) {
+    return envBase.replace(/\/+$/, '');
   }
   const host = typeof window !== 'undefined' && window.location.hostname === '127.0.0.1' 
     ? '127.0.0.1' 
