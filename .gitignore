@@ -46,6 +46,7 @@ build/
 .turbo/
 
 # Backups & Scratch directories
+LINKSHIELD_AI_Phase_Prompts.md
 frontend/src_backup_before_hindi/
 scratch/
 scripts/chrome_test_profile/
