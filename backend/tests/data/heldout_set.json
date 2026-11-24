@@ -1,0 +1,216 @@
+{
+  "scams": [
+    {
+      "id": "HS1",
+      "type": "message",
+      "name": "BSNL 5G SIM Upgrade Scam",
+      "content": "Dear Customer, Your BSNL SIM has been upgraded to 5G. Click here to activate 5G services within 12 hours otherwise your SIM will be permanently disconnected: http://bsnl-5g-upgrade.online/activate",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS2",
+      "type": "message",
+      "name": "Electricity Power Cut Alert (Hindi)",
+      "content": "प्रिय उपभोक्ता, आपकी बिजली आपूर्ति आज रात 10:00 बजे काट दी जाएगी क्योंकि पिछला बिल बकाया है। बिल तुरंत जमा करने के लिए बिजली अधिकारी से संपर्क करें: 9823456781",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS3",
+      "type": "message",
+      "name": "Axis Bank Rewards Expiry",
+      "content": "Axis Bank alert: Your 9,500 credit card reward points worth Rs 4,750 are expiring today. Redeem into bank cash immediately by visiting http://axis-reward-points.site/redeem",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS4",
+      "type": "message",
+      "name": "Telegram Movie Review Work From Home",
+      "content": "Earn daily Rs 2500 - Rs 6000 by giving 5 star ratings to upcoming Bollywood movies on Telegram! Work only 30 mins per day from phone. Instant bank transfer. Contact @MovieRatingHR on Telegram.",
+      "expected_risk": "MEDIUM"
+    },
+    {
+      "id": "HS5",
+      "type": "message",
+      "name": "Delhi Police Narcotics Notice (Digital Arrest)",
+      "content": "CRIMINAL INVESTIGATION NOTICE: A courier booked with your Aadhaar containing MDMA drugs and forged passports has been seized at airport customs. High Court arrest warrant issued. Contact Cyber Inspector on WhatsApp immediately to avoid arrest.",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS6",
+      "type": "message",
+      "name": "Hinglish Electricity Disconnection Warning",
+      "content": "Bijli vibhag notice: Priya upbhokta, aapka light connection aaj raat 9 baje disconnect kiya jayega. Bill jama nahi hai. Turant contact karein bijli babu 9877112233.",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS7",
+      "type": "message",
+      "name": "Instant Personal Loan Without CIBIL",
+      "content": "Dear user, instant loan of Rs 3,50,000 has been sanctioned for you. 0 processing fee, no salary slip or CIBIL check. Click link to get funds in 10 minutes: http://paisa-instant-loan.top/apply",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS8",
+      "type": "message",
+      "name": "Bank Support AnyDesk APK Sideload",
+      "content": "SBI Netbanking Support: Your recent transaction of Rs 25,000 is on hold. Download our official SBI QuickSupport App APK to cancel payment: http://sbi-support-desk.xyz/sbi_support.apk",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS9",
+      "type": "message",
+      "name": "Delivery Address Incomplete Fee Scam",
+      "content": "DTDC Express: Your courier parcel #DT88912 cannot be dispatched due to wrong street address. Kindly pay re-delivery charge of Rs 25 to confirm your address: http://dtdc-redelivery.online/verify",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS10",
+      "type": "message",
+      "name": "EPFO PF Claim Advance Fee",
+      "content": "EPFO Alert: Your Provident Fund advance withdrawal of Rs 85,000 is approved. Pay government stamp fee of Rs 950 to release payment to your bank account: http://epfo-claim-status.cfd/payout",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS11",
+      "type": "message",
+      "name": "Hinglish Pan Aadhaar Link Penalty Threat",
+      "content": "Aapka PAN card Aadhar se link nahi hai. Aaj aakhri din hai nahi toh Rs 10000 jurmana lagega aur account block ho jayega. Turant update karein: http://pan-aadhaar-link.buzz/login",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS12",
+      "type": "url",
+      "name": "Phishing URL on Vercel App",
+      "content": "https://pnb-onlinebanking-kyc.vercel.app/login",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS13",
+      "type": "url",
+      "name": "Shortened Link to Fake Income Tax Portal",
+      "content": "https://cutt.ly/incometax-refund2026",
+      "expected_risk": "MEDIUM"
+    },
+    {
+      "id": "HS14",
+      "type": "url",
+      "name": "Numerical IP Phishing Host",
+      "content": "http://192.0.2.145/bank-of-baroda/secure",
+      "expected_risk": "HIGH"
+    },
+    {
+      "id": "HS15",
+      "type": "url",
+      "name": "Direct APK Download on Abused TLD",
+      "content": "http://quick-bonus-claim.shop/security-patch.apk",
+      "expected_risk": "HIGH"
+    }
+  ],
+  "genuine": [
+    {
+      "id": "HG1",
+      "type": "message",
+      "name": "HDFC Account Balance Credit Notification",
+      "content": "INR 5,000.00 credited to your HDFC Bank A/C XX9012 on 23-Nov-2026 via IMPS. Info: INF/N32810. Total Balance: INR 34,910.12.",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG2",
+      "type": "message",
+      "name": "SBI Debit Alert",
+      "content": "Dear Customer, INR 350.00 debited from SBI A/c ...7812 on 23-Nov-26 at Merchant POS Jaipur. Available Bal: Rs 14,210.00.",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG3",
+      "type": "message",
+      "name": "ICICI Netbanking Login OTP",
+      "content": "918234 is the One Time Password (OTP) for login to ICICI Bank Internet Banking. Valid for 3 mins. Never share your OTP with anyone.",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG4",
+      "type": "message",
+      "name": "Amazon Delivery Tracking with Genuine Link",
+      "content": "Your Amazon package with order #402-9912019-10291 is arriving today by 8 PM. Track your package: https://www.amazon.in/gp/your-account/order-history",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG5",
+      "type": "message",
+      "name": "Aadhaar Authentication OTP",
+      "content": "OTP for Aadhaar (UIDAI) authentication is 449102. Valid for 10 minutes. Do not share OTP with anyone for safety.",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG6",
+      "type": "message",
+      "name": "IRCTC PNR Status Notification",
+      "content": "IRCTC: Your PNR 2819201102 Train 12414 (Pooja Express) departing on 24-Nov-2026 is Confirmed (Coach S4, Berth 33).",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG7",
+      "type": "message",
+      "name": "Delhivery Courier Shipment Tracking",
+      "content": "Shipment #DEL2910482 from Croma is scheduled for delivery today. Delivery agent will call before arrival. Delhivery Logistics.",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG8",
+      "type": "message",
+      "name": "BESCOM Electricity Bill Receipt",
+      "content": "Dear Consumer, payment of Rs 1,180 for Account ID 8912019 received on 22-Nov-2026. Thank you for using official portal BESCOM.",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG9",
+      "type": "message",
+      "name": "Jio Fiber Bill Due Date Notification",
+      "content": "JioFiber update: Monthly plan invoice of Rs 824.82 generated for JioFiber service 0141-291048. Due date is 29-Nov-2026.",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG10",
+      "type": "message",
+      "name": "Zomato Food Order Confirmed",
+      "content": "Your order from Sharma Dhaba has been placed! Delivery partner will pick up your meal shortly. Enjoy your food.",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG11",
+      "type": "url",
+      "name": "Official ICICI Bank Portal",
+      "content": "https://www.icicibank.com/personal-banking/insta-banking/internet-banking",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG12",
+      "type": "url",
+      "name": "Official India Post Portal",
+      "content": "https://www.indiapost.gov.in/vas/pages/indiaposthome.aspx",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG13",
+      "type": "url",
+      "name": "Official EPFO Portal",
+      "content": "https://www.epfindia.gov.in/site_en/index.php",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG14",
+      "type": "url",
+      "name": "Official NPCI Portal",
+      "content": "https://www.npci.org.in/what-we-do/upi/product-overview",
+      "expected_risk": "LOW"
+    },
+    {
+      "id": "HG15",
+      "type": "url",
+      "name": "Official Rajasthan Police Portal",
+      "content": "https://police.rajasthan.gov.in/",
+      "expected_risk": "LOW"
+    }
+  ]
+}

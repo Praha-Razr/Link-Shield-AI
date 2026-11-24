@@ -1,0 +1,120 @@
+{
+  "sbi": {
+    "name": "State Bank of India (SBI)",
+    "aliases": ["sbi", "state bank of india", "state bank", "yono", "onlinesbi"],
+    "official_domains": ["sbi.co.in", "onlinesbi.sbi", "onlinesbi.com", "bank.sbi"]
+  },
+  "hdfc": {
+    "name": "HDFC Bank",
+    "aliases": ["hdfc", "hdfc bank", "hdfcbank", "payzapp"],
+    "official_domains": ["hdfcbank.com", "hdfcbank.net", "hdfc.com"]
+  },
+  "icici": {
+    "name": "ICICI Bank",
+    "aliases": ["icici", "icici bank", "icicibank", "imobile"],
+    "official_domains": ["icicibank.com", "icici.com"]
+  },
+  "axis": {
+    "name": "Axis Bank",
+    "aliases": ["axis", "axis bank", "axisbank"],
+    "official_domains": ["axisbank.com"]
+  },
+  "kotak": {
+    "name": "Kotak Mahindra Bank",
+    "aliases": ["kotak", "kotak bank", "kotak mahindra", "kotak 811", "kotak811"],
+    "official_domains": ["kotak.com", "kotakbank.com"]
+  },
+  "pnb": {
+    "name": "Punjab National Bank (PNB)",
+    "aliases": ["pnb", "punjab national bank", "pnb bank", "pnbindia"],
+    "official_domains": ["pnbindia.in", "pnb.bank.in"]
+  },
+  "paytm": {
+    "name": "Paytm",
+    "aliases": ["paytm", "paytm payments bank", "paytm kyc"],
+    "official_domains": ["paytm.com", "paytmbank.com"]
+  },
+  "phonepe": {
+    "name": "PhonePe",
+    "aliases": ["phonepe", "phone pe"],
+    "official_domains": ["phonepe.com"]
+  },
+  "googlepay": {
+    "name": "Google Pay",
+    "aliases": ["google pay", "gpay", "googlepay"],
+    "official_domains": ["pay.google.com", "google.com"]
+  },
+  "indiapost": {
+    "name": "India Post / Post Office",
+    "aliases": ["india post", "indiapost", "post office", "ippb", "india post payment bank"],
+    "official_domains": ["indiapost.gov.in", "ippbonline.com"]
+  },
+  "irctc": {
+    "name": "IRCTC",
+    "aliases": ["irctc", "indian railways", "rail connect"],
+    "official_domains": ["irctc.co.in", "irctc.com"]
+  },
+  "amazon": {
+    "name": "Amazon",
+    "aliases": ["amazon", "amazon pay", "amazon prime"],
+    "official_domains": ["amazon.in", "amazon.com"]
+  },
+  "flipkart": {
+    "name": "Flipkart",
+    "aliases": ["flipkart", "supercoin"],
+    "official_domains": ["flipkart.com"]
+  },
+  "airtel": {
+    "name": "Bharti Airtel",
+    "aliases": ["airtel", "airtel thanks", "airtel payment bank", "airtel payments bank"],
+    "official_domains": ["airtel.in", "airtel.com"]
+  },
+  "jio": {
+    "name": "Reliance Jio",
+    "aliases": ["jio", "reliance jio", "myjio", "jiofiber", "jio fiber"],
+    "official_domains": ["jio.com"]
+  },
+  "incometax": {
+    "name": "Income Tax Department",
+    "aliases": ["income tax", "incometax", "itr", "tax refund", "ay 2026", "cpc income tax"],
+    "official_domains": ["incometax.gov.in", "incometaxindia.gov.in"]
+  },
+  "uidai": {
+    "name": "UIDAI / Aadhaar",
+    "aliases": ["uidai", "aadhaar", "aadhar", "maadhaar"],
+    "official_domains": ["uidai.gov.in"]
+  },
+  "epfo": {
+    "name": "EPFO",
+    "aliases": ["epfo", "provident fund", "pf claim", "epf balance", "uan portal"],
+    "official_domains": ["epfindia.gov.in"]
+  },
+  "fastag": {
+    "name": "NHAI FASTag",
+    "aliases": ["fastag", "nhai fastag", "toll plaza fastag", "fast tag"],
+    "official_domains": ["ihmcl.co.in", "nhai.gov.in", "npci.org.in"]
+  },
+  "electricity_boards": {
+    "name": "Electricity / Power Utilities",
+    "aliases": ["electricity", "bijli", "power bill", "bescom", "tneb", "msedcl", "uppcl", "pspcl", "jvvnl", "discom", "power cut"],
+    "official_domains": [
+      "bescom.karnataka.gov.in",
+      "tnebnet.org",
+      "mahadiscom.in",
+      "upenergy.in",
+      "pspcl.in",
+      "energy.rajasthan.gov.in",
+      "jvvnlltd.com"
+    ]
+  },
+  "courier": {
+    "name": "Courier & Logistics (Delhivery / BlueDart / DTDC)",
+    "aliases": ["delhivery", "bluedart", "blue dart", "dtdc", "fedex", "courier parcel", "customs shipment"],
+    "official_domains": ["delhivery.com", "bluedart.com", "dtdc.in", "fedex.com"]
+  },
+  "cybercrime": {
+    "name": "National Cyber Crime Reporting Portal",
+    "aliases": ["cybercrime", "cyber crime", "1930 helpline", "national cyber reporting"],
+    "official_domains": ["cybercrime.gov.in"]
+  }
+}

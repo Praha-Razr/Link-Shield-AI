@@ -1,0 +1,50 @@
+{
+  "1. Genuine Bank SMS -> LOW risk": {
+    "passed": true,
+    "details": "Risk: LOW, Score: 15"
+  },
+  "2. Scam SMS (English) -> HIGH risk": {
+    "passed": true,
+    "details": "Risk: HIGH, Score: 100"
+  },
+  "3. Scam SMS (Hinglish/Devanagari) -> HIGH risk": {
+    "passed": true,
+    "details": "Risk: HIGH, Score: 50, Indicators: 4"
+  },
+  "4. URL Scanner Lookalike Domain -> flags lookalike & score > 50": {
+    "passed": true,
+    "details": "Score: 100, Indicators: ['Look-alike Brand Domain', 'Suspicious URL Structure Pattern', 'SSRF Prohibited Destination', 'Near-duplicate Content (Case LS-0045)', 'Near-duplicate Content (Case LS-0040)', 'Near-duplicate Content (Case DEMO-021)', 'Near-duplicate Content (Case LS-0002)']"
+  },
+  "5. SSRF Attempt (127.0.0.1) -> cleanly blocked": {
+    "passed": true,
+    "details": "Intercepted by policy: ['Suspicious URL Structure Pattern', 'Unencrypted HTTP Scheme', 'SSRF Prohibited Destination', 'Near-duplicate Content (Case LS-0046)', 'Near-duplicate Content (Case LS-0041)']"
+  },
+  "6. Website Analyser -> extracts indicators & identifiers": {
+    "passed": true,
+    "details": "Risk: MEDIUM, Score: 30, Identifiers: 2"
+  },
+  "7. Case Management -> open, detail, save note cleanly": {
+    "passed": true,
+    "details": "Case LS-0053 updated with note"
+  },
+  "8. Scam Graph -> campaign hubs, nodes & valid threat scores": {
+    "passed": true,
+    "details": "Total Nodes: 62, Total Edges: 105, High Threat Sample Score: 75/100"
+  },
+  "9. PDF Dossier -> downloads valid PDF across distinct cases": {
+    "passed": true,
+    "details": "Verified 3 PDF dossiers generated successfully"
+  },
+  "10. Assistant -> 5 intent questions answered with evidence citations": {
+    "passed": true,
+    "details": "Q: 'Why was case LS-0006 clas...' -> OK; Q: 'Which domain appears in m...' -> OK; Q: 'Which UPI ID has the most...' -> OK; Q: 'Show all cases linked to ...' -> OK; Q: 'Summarise this investigat...' -> OK"
+  },
+  "11. Assistant Fallback -> exact string on ungrounded query": {
+    "passed": true,
+    "details": "Answer: 'No supporting records found in the database.'"
+  },
+  "12. Demo Data -> Clear, Load & Idempotency": {
+    "passed": true,
+    "details": "Real cases: 53, After Demo Load: 97, Idempotency Verified"
+  }
+}

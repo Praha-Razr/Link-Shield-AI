@@ -1,0 +1,448 @@
+{
+  "thresholds": {
+    "low_max": 24,
+    "medium_max": 49,
+    "cap": 100
+  },
+  "indicators": [
+    {
+      "id": "urgency_threat",
+      "name": "Urgency or Threatening Language",
+      "points": 15,
+      "explanation": "Language designed to create artificial panic, urgency, or fear to prevent careful verification.",
+      "keywords_en": [
+        "immediately", "within 24 hours", "urgent action", "last warning", "final notice",
+        "act now", "today only", "will be blocked today", "suspended immediately",
+        "action required within", "otherwise your services will be", "deactivation notice"
+      ],
+      "keywords_hi": [
+        "तुरंत", "अंतिम चेतावनी", "२४ घंटे", "आज ही", "तत्काल", "ब्लॉक कर दिया जाएगा",
+        "स्थगित", "आज रात", "सेवा बंद", "चेतावनी"
+      ],
+      "keywords_hinglish": [
+        "turant", "aaj hi", "jaldi karein", "final warning", "block ho jayega",
+        "khata band ho jayega", "24 ghante", "aaj raat tak", "band ho jayega",
+        "turant sampark karein", "urgent call karein"
+      ]
+    },
+    {
+      "id": "fake_kyc",
+      "name": "Fake KYC or Account-Block Warning",
+      "points": 20,
+      "explanation": "Patterns consistent with fraudulent KYC update or account deactivation threats used for credential harvesting.",
+      "keywords_en": [
+        "kyc suspended", "update kyc", "kyc expired", "pan card not linked",
+        "account will be blocked", "aadhaar link pending", "submit documents to unblock",
+        "kyc verification mandatory", "complete kyc immediately", "sim card kyc"
+      ],
+      "keywords_hi": [
+        "केवाईसी अपडेट", "केवाईसी निलंबित", "खाता ब्लॉक", "पैन कार्ड लिंक",
+        "आधार कार्ड सत्यापन", "बैंक खाता बंद", "दस्तावेज़ जमा", "केवाईसी सत्यापन"
+      ],
+      "keywords_hinglish": [
+        "kyc update karein", "kyc block", "aapka account block", "pan link karein",
+        "aadhaar pending", "khata band", "document jama karein", "kyc band",
+        "pan aadhar link", "kyc verify karein"
+      ]
+    },
+    {
+      "id": "impersonation_entity",
+      "name": "Institutional or Brand Impersonation",
+      "points": 15,
+      "explanation": "References well-known banks, government bodies, or postal services to establish illegitimate authority.",
+      "keywords_en": [
+        "state bank of india", "sbi", "hdfc bank", "icici bank", "income tax department",
+        "india post", "customs department", "reserve bank of india", "rbi",
+        "cyber crime cell", "customs clearance", "courier department"
+      ],
+      "keywords_hi": [
+        "भारतीय स्टेट बैंक", "आयकर विभाग", "इंडिया पोस्ट", "सीमा शुल्क",
+        "रिजर्व बैंक", "साइबर क्राइम", "डाक विभाग"
+      ],
+      "keywords_hinglish": [
+        "state bank", "hdfc", "icici", "income tax", "india post",
+        "customs officer", "cyber police", "rbi notice"
+      ]
+    },
+    {
+      "id": "electricity_scam",
+      "name": "Electricity Disconnection Scam Pattern",
+      "points": 35,
+      "explanation": "Language characteristic of fraudulent utility disconnection threats requesting immediate contact.",
+      "keywords_en": [
+        "electricity power will be disconnected", "electricity office", "bill unpaid",
+        "power cut at 9:30 pm", "electricity officer", "disconnection notice",
+        "contact electricity officer", "power will be suspended tonight"
+      ],
+      "keywords_hi": [
+        "बिजली का बिल", "बिजली काट दी जाएगी", "बिजली विभाग", "बिल बकाया",
+        "रात ९:३० बजे", "बिजली आपूर्ति बंद", "अधिकारी से संपर्क करें"
+      ],
+      "keywords_hinglish": [
+        "bijli bill", "bijli connection", "bijli kat", "bijli cut ho jayegi", "light cut", "power cut",
+        "bijli officer", "bill jama nahi kiya", "bill jama nahi hua", "aaj raat bijli band",
+        "light connection cut", "bijli vibhag"
+      ]
+    },
+    {
+      "id": "parcel_delivery_scam",
+      "name": "Parcel Delivery or Customs Fee Scam",
+      "points": 15,
+      "explanation": "Claims a package or consignment is held due to incomplete address or unpaid rescheduling/customs fees.",
+      "keywords_en": [
+        "package cannot be delivered", "parcel pending", "reschedule delivery",
+        "unpaid customs fee", "delivery address incorrect", "parcel detained",
+        "update address to deliver", "pay clearance fee", "package on hold"
+      ],
+      "keywords_hi": [
+        "पार्सल रोका गया", "पार्सल डिलीवरी", "पता अधूरा", "शुल्क भुगतान",
+        "कूरियर अटका हुआ", "डिलीवरी रद्द"
+      ],
+      "keywords_hinglish": [
+        "parcel pending", "package delivery", "address update karein",
+        "delivery fee bharein", "parcel holding", "courier ruk gaya",
+        "package ruka hua hai"
+      ]
+    },
+    {
+      "id": "fake_job_offer",
+      "name": "Fake Work-From-Home or Task Job",
+      "points": 25,
+      "explanation": "Promises guaranteed daily wages for simple remote tasks (video likes, map/movie reviews), frequently leading to advance-fee fraud.",
+      "keywords_en": [
+        "part time job", "work from home daily earning", "guaranteed daily income",
+        "earn 2000 to 5000 per day", "telegram task job", "youtube like video earn",
+        "daily payout", "registration fee for job", "easy part time work",
+        "daily payout guaranteed", "registration fee to activate", "work from home",
+        "earn rs", "earn daily", "liking youtube videos", "rating google maps",
+        "giving 5 star ratings", "rating movies", "work only 30 mins", "simple online task",
+        "daily payout to your upi", "like and subscribe earn", "review tasks", "telegram task"
+      ],
+      "keywords_hi": [
+        "घर बैठे पैसे कमाएं", "पार्ट टाइम जॉब", "प्रतिदिन कमाई",
+        "नौकरी के लिए पंजीकरण शुल्क", "यूट्यूब लाइक जॉब", "घर बैठे नौकरी", "टास्क पूरा करें"
+      ],
+      "keywords_hinglish": [
+        "part time job", "ghar baithe kamaye", "daily earning",
+        "per day kamaye", "like karke paise kamaye", "task complete karein",
+        "daily payment", "registration charge lagega", "movie rating task", "daily upi payout"
+      ]
+    },
+    {
+      "id": "suspicious_payment_instruction",
+      "name": "Suspicious Direct Payment Request",
+      "points": 15,
+      "explanation": "Instructs recipient to transfer funds directly to a personal UPI ID, mobile number, or unverified account.",
+      "keywords_en": [
+        "pay to upi", "send payment to upi", "transfer to account",
+        "deposit to address", "send screenshot after payment", "pay registration charge",
+        "processing fee to upi", "transfer advance", "pay refundable deposit",
+        "pay registration fee", "registration fee", "pay processing fee", "processing fee",
+        "processing fee to account", "fee to upi", "fee to account", "pay to account"
+      ],
+      "keywords_hi": [
+        "यूपीआई पर भुगतान", "खाते में ट्रांसफर", "स्क्रीनशॉट भेजें",
+        "पंजीकरण शुल्क", "सुरक्षा जमा", "तुरंत पैसे भेजें"
+      ],
+      "keywords_hinglish": [
+        "upi par bhejo", "upi par", "upi pe", "paise transfer karein", "screenshot bhejiye",
+        "fees deposit karein", "is number par pay karein", "advance jama karein",
+        "upi pe bhejiye", "pay karein"
+      ]
+    },
+    {
+      "id": "investment_guaranteed_return",
+      "name": "Guaranteed Return Investment Claims",
+      "points": 20,
+      "explanation": "Promises guaranteed, zero-risk, or unrealistic investment returns, inconsistent with legitimate markets.",
+      "keywords_en": [
+        "guaranteed return", "100% risk free", "fixed monthly profit",
+        "high yield investment", "guaranteed profit", "assured returns",
+        "zero risk investment", "daily fixed profit"
+      ],
+      "keywords_hi": [
+        "गारंटीड रिटर्न", "निश्चित लाभ", "बिना किसी जोखिम",
+        "सुनिश्चित मुनाफा", "दैनिक लाभ"
+      ],
+      "keywords_hinglish": [
+        "guaranteed return", "pakka munafa", "bina kisi risk ke",
+        "fixed return", "monthly profit guaranteed", "har mahine guaranteed"
+      ]
+    },
+    {
+      "id": "ponzi_double_money",
+      "name": "High-Multiplier or Double Money Scheme",
+      "points": 20,
+      "explanation": "Advertises rapid wealth multiplication or double-your-money schemes, typical of Ponzi structures.",
+      "keywords_en": [
+        "double your money", "2x in 24 hours", "3x returns",
+        "wealth multiplier", "instant doubling", "invest 1000 get 10000",
+        "money doubler", "multiply wealth instantly"
+      ],
+      "keywords_hi": [
+        "पैसे दोगुने", "२४ घंटे में डबल", "धन दोगुना",
+        "१० गुना मुनाफा", "पैसे डबल"
+      ],
+      "keywords_hinglish": [
+        "paise double", "24 ghante me 2x", "1000 lagao 10000 pao",
+        "double return", "dhan dugna", "paise double karein"
+      ]
+    },
+    {
+      "id": "mlm_referral_chain",
+      "name": "Multi-Level or Referral Chain Scheme",
+      "points": 15,
+      "explanation": "Incentivizes recruitment of new members through referral chains and downline commission claims.",
+      "keywords_en": [
+        "referral bonus", "invite 5 friends earn", "downline commission",
+        "direct referral reward", "matrix plan", "mlm chain",
+        "earn from every referral", "network marketing level"
+      ],
+      "keywords_hi": [
+        "रेफरल बोनस", "मित्रों को जोड़ें", "कमीशन कमाएं",
+        "सदस्य बनाएं", "चेन सिस्टम"
+      ],
+      "keywords_hinglish": [
+        "referral commission", "dosto ko jodo", "level income",
+        "downline bonus", "refer karein aur kamaye", "chain banaye"
+      ]
+    },
+    {
+      "id": "illegal_betting",
+      "name": "Unregulated Betting or Gambling Promotion",
+      "points": 20,
+      "explanation": "Promotes unlicensed online betting platforms, color prediction games, or cricket match speculation IDs.",
+      "keywords_en": [
+        "cricket betting id", "color prediction game", "satta matka",
+        "online casino bonus", "instant withdrawal betting", "ipl match betting",
+        "betting id online", "casino game win", "online betting", "cricket betting",
+        "cricket satta", "matka betting", "betting bonus", "online casino"
+      ],
+      "keywords_hi": [
+        "क्रिकेट सट्टा", "सट्टा मटका", "कलर प्रेडिक्शन",
+        "ऑनलाइन कैसीनो", "आईपीएल सट्टा", "सट्टा किंग"
+      ],
+      "keywords_hinglish": [
+        "betting id", "satta king", "cricket betting",
+        "color prediction", "online casino", "bet lagao",
+        "satta matka", "ipl id", "match betting"
+      ]
+    },
+    {
+      "id": "fake_loan_offer",
+      "name": "Unverified Instant Loan Claim",
+      "points": 15,
+      "explanation": "Advertises instant loan disbursement with no credit checks or documentation, consistent with fake loan apps.",
+      "keywords_en": [
+        "instant loan approved", "no cibil required", "no document loan",
+        "loan without verification", "pre-approved loan of rs",
+        "instant credit without income proof", "get loan in 5 minutes",
+        "instant loan", "pre-approved loan", "without cibil", "without documents",
+        "no income proof", "pre-approved personal loan", "fast loan", "quick loan", "loan apply"
+      ],
+      "keywords_hi": [
+        "तत्काल ऋण", "बिना दस्तावेज लोन", "सिबिल स्कोर की आवश्यकता नहीं",
+        "तुरंत लोन स्वीकृत", "५ मिनट में लोन"
+      ],
+      "keywords_hinglish": [
+        "instant loan", "bina document loan", "cibil check nahi",
+        "turant loan pao", "pre approved loan", "bina paper ke loan",
+        "5 minute me loan"
+      ]
+    },
+    {
+      "id": "digital_arrest_extortion",
+      "name": "Digital Arrest or Law Enforcement Extortion",
+      "points": 35,
+      "explanation": "Claims police, CBI, ED, Crime Branch, customs, or court arrest warrant for illegal drugs, contraband, or money laundering, typical of 'Digital Arrest' extortion.",
+      "keywords_en": [
+        "digital arrest", "crime branch", "arrest warrant", "narcotics", "contraband drugs",
+        "cbi notice", "cbi investigation", "ed notice", "customs detention", "illegal package",
+        "police complaint against you", "court warrant", "customs seized", "mdma", "forged passports",
+        "legal clearance", "high court arrest warrant", "crime branch police notice"
+      ],
+      "keywords_hi": [
+        "डिजिटल अरेस्ट", "गिरफ्तारी वारंट", "क्राइम ब्रांच", "नशीली दवाएं", "सीबीआई जांच", "पुलिस नोटिस"
+      ],
+      "keywords_hinglish": [
+        "digital arrest", "arrest warrant", "crime branch notice", "drugs parcel", "police notice", "cbi notice", "court ka warrant", "police case"
+      ]
+    },
+    {
+      "id": "trai_sim_block",
+      "name": "SIM or Telecom Deactivation Threat",
+      "points": 25,
+      "explanation": "Threatens immediate mobile SIM card deactivation or blocking by TRAI or telecom operator unless biometric or KYC verification is performed.",
+      "keywords_en": [
+        "trai alert", "sim card will be blocked", "sim will be blocked", "sim card deactivation",
+        "sim disconnected", "biometric verification", "sim verification", "mobile number will be blocked",
+        "sim suspended", "telecom security guidelines", "sim upgrade", "5g sim upgrade", "bsnl sim"
+      ],
+      "keywords_hi": [
+        "सिम ब्लॉक", "सिम कार्ड बंद", "दूरसंचार विभाग", "बायोमेट्रिक सत्यापन", "सिम अपग्रेड"
+      ],
+      "keywords_hinglish": [
+        "sim block", "sim band ho jayegi", "sim deactivation", "trai notice", "biometric verify", "sim upgrade"
+      ]
+    },
+    {
+      "id": "kbc_lottery_prize",
+      "name": "Lottery, Contest, or Lucky Draw Prize Scam",
+      "points": 30,
+      "explanation": "Claims recipient has won an unearned lottery, KBC lucky draw, or cash prize requiring contact or fee payment to claim.",
+      "keywords_en": [
+        "kbc lucky draw", "kaun banega crorepati", "lottery winner", "won cash prize",
+        "won rs", "claim your reward", "lucky winner", "won 25 lakh", "lottery prize",
+        "lucky draw winner", "congratulations you won", "reward points worth rs", "expiring today. redeem",
+        "reward points are expiring"
+      ],
+      "keywords_hi": [
+        "लॉटरी विजेता", "केबीसी लकी ड्रॉ", "इनाम जीता", "पुरस्कार राशि", "लाखों का इनाम", "इनाम क्लेम करें"
+      ],
+      "keywords_hinglish": [
+        "kbc lucky draw", "lottery lag gayi", "kaun banega crorepati", "inam jeeta", "lucky winner", "prize claim karein", "reward points expire"
+      ]
+    },
+    {
+      "id": "otp_credential_theft",
+      "name": "OTP, PIN, or CVV Disclosure Solicitation",
+      "points": 30,
+      "explanation": "Directly requests recipient to share or disclose one-time passwords (OTP), PINs, CVV codes, or netbanking credentials to reverse charges or verify accounts.",
+      "keywords_en": [
+        "share the 6-digit", "cancellation otp", "enter your pin",
+        "provide cvv", "send otp to", "tell otp", "share one time password to",
+        "reverse charges", "unauthorized charge", "cancellation otp sent to your phone",
+        "share 6-digit otp", "share the otp to", "share otp to"
+      ],
+      "keywords_hi": [
+        "ओटीपी साझा करें", "ओटीपी बताएं", "पिन दर्ज करें", "सीवीवी दें"
+      ],
+      "keywords_hinglish": [
+        "otp share karein", "otp batayein", "cancel otp bhejein", "cancellation otp", "pin daalein", "otp bhejo"
+      ]
+    },
+    {
+      "id": "remote_access_apk",
+      "name": "Remote Access Software or APK Installation Request",
+      "points": 35,
+      "explanation": "Instructs user to download remote desktop utilities (AnyDesk, TeamViewer, QuickSupport) or sideload external APK packages to resolve banking issues.",
+      "keywords_en": [
+        "anydesk", "teamviewer", "quicksupport", "rustdesk", "download apk",
+        "install apk", "download our app", "support apk", "bank assistant apk",
+        "install assistant", "sbi_support.apk", "support.apk", "quicksupport bank assistant"
+      ],
+      "keywords_hi": [
+        "ऐप डाउनलोड करें", "एपीके इंस्टॉल करें", "रिमोट एक्सेस"
+      ],
+      "keywords_hinglish": [
+        "anydesk download", "teamviewer install", "quicksupport apk", "app install karein", "apk download karein"
+      ]
+    },
+    {
+      "id": "income_tax_gst_refund",
+      "name": "Income Tax or GST Refund Claim",
+      "points": 25,
+      "explanation": "Falsely announces an approved tax or GST refund requiring bank details or immediate verification within 24 hours.",
+      "keywords_en": [
+        "tax refund of rs", "tax refund has been approved", "income tax refund",
+        "itr refund approved", "claim your tax refund", "gst refund approved", "income tax department: your tax refund"
+      ],
+      "keywords_hi": [
+        "आयकर रिफंड", "टैक्स रिफंड स्वीकृत", "रिफंड प्राप्त करें"
+      ],
+      "keywords_hinglish": [
+        "tax refund", "income tax refund approved", "refund claim karein", "tax wapas"
+      ]
+    },
+    {
+      "id": "fastag_toll_scam",
+      "name": "FASTag Expiry or Toll Block Scam",
+      "points": 25,
+      "explanation": "Falsely warns that vehicle FASTag is suspended or expired and threatens double toll charges unless recharged via an unverified link.",
+      "keywords_en": [
+        "fastag wallet has been blocked", "fastag is blocked", "fastag kyc",
+        "fastag will be deactivated", "double toll at plaza", "update fastag immediately",
+        "fastag balance low", "nhai fastag", "fastag wallet"
+      ],
+      "keywords_hi": [
+        "फास्टैग ब्लॉक", "फास्टैग केवाईसी", "टोल प्लाजा पर दोगुना शुल्क"
+      ],
+      "keywords_hinglish": [
+        "fastag block", "fastag kyc update", "double toll lagega", "fastag recharge karein"
+      ]
+    },
+    {
+      "id": "known_person_impersonation",
+      "name": "Known Person or Relative Impersonation",
+      "points": 15,
+      "explanation": "Claims to be a family member, relative, or acquaintance communicating from an unknown or newly changed phone number.",
+      "keywords_en": [
+        "this is my new number", "this is my new phone number", "i lost my phone", "lost my phone",
+        "my phone is broken", "my phone is damaged", "my phone is stolen", "phone is broken",
+        "phone is damaged", "phone is stolen", "i changed my number", "changed my number",
+        "save this number", "save my new number", "save this new number", "temporary new number",
+        "using colleague phone", "using friend phone", "phone screen shattered",
+        "hi mum", "hi dad", "hi mom", "hi papa", "hi beta", "hi bhaiya",
+        "hello mum", "hello dad", "hello mom", "hello papa", "hello bhaiya",
+        "hey dad", "hey mom", "hey mum", "dear dad", "dear mom"
+      ],
+      "keywords_hi": [
+        "मेरा नया नंबर है", "फोन खो गया", "मेरा पुराना फोन खो गया", "फोन टूट गया", "नया नंबर सेव कर लो",
+        "नया नंबर है", "नमस्ते पापा", "नमस्ते माँ", "प्रणाम पापा", "नमस्ते मम्मी", "माँ मेरा फोन", "पापा मेरा फोन"
+      ],
+      "keywords_hinglish": [
+        "mera naya number hai", "phone kho gaya", "phone toot gaya", "phone chori ho gaya",
+        "naya number save kar", "naya number save karo", "naya number save kar lena",
+        "number change ho gaya", "phone kharab ho gaya", "purana phone kho gaya"
+      ]
+    },
+    {
+      "id": "urgent_third_party_payment",
+      "name": "Urgent Third-Party Money Request or Secrecy",
+      "points": 15,
+      "explanation": "Urgent request to transfer funds to a third party or friend's account accompanied by urgency, secrecy, or excuses not to call.",
+      "keywords_en": [
+        "friend's upi", "friend's account", "cousin's upi", "cousin's account",
+        "colleague's upi", "colleague's account", "friend upi", "friend account",
+        "i'll explain later", "i will explain later", "explain later",
+        "don't call", "can't talk now", "cannot talk now",
+        "please don't tell anyone", "don't tell anyone",
+        "urgently need rs", "urgently send rs", "pay urgently"
+      ],
+      "keywords_hi": [
+        "दोस्त के खाते में", "दोस्त की यूपीआई", "बाद में बताऊंगा", "फोन मत करना",
+        "अभी बात नहीं कर सकता", "किसी को मत बताना", "तुरंत रुपये", "रुपये भेज दो"
+      ],
+      "keywords_hinglish": [
+        "dost ke upi", "dost ke account", "baad me bataunga", "baad mein bataunga",
+        "call mat karna", "phone mat karna", "abhi baat nahi kar sakta",
+        "kisi ko mat batana", "kisi ko batana mat", "dost ko turant"
+      ]
+    },
+    {
+      "id": "benign_service_context",
+      "name": "Legitimate Transactional Alert Pattern",
+      "points": -20,
+      "explanation": "Contains standard transactional or informational phrasing commonly present in legitimate automated notifications.",
+      "keywords_en": [
+        "credited to your a/c", "credited to your account", "credited to your hdfc", "credited to your sbi",
+        "debited from a/c", "debited from sbi", "deposited in your account", "your otp is",
+        "one time password", "do not share this otp with anyone", "order has been shipped",
+        "out for delivery today", "interview scheduled on", "ticket confirmed",
+        "statement for the month of", "bill payment received successfully", "available balance:", "available bal:",
+        "chart prepared", "charting status", "arriving today", "track your package", "pnr", "otp for aadhaar",
+        "valid for 10 minutes", "scheduled for delivery", "delivery agent will call", "monthly plan invoice",
+        "has been placed", "enjoy your food", "no action required", "valid for 5 minutes. do not share this otp",
+        "itr-1 for ay", "successfully e-verified"
+      ],
+      "keywords_hi": [
+        "खाते में जमा", "ओटीपी किसी के साथ साझा न करें", "ऑर्डर भेज दिया गया है",
+        "डिलीवरी के लिए रवाना", "टिकट कन्फर्म", "सफलतापूर्वक प्राप्त", "खाते से डेबिट"
+      ],
+      "keywords_hinglish": [
+        "account me credit hua", "otp kisi ko na bataye", "order nikal gaya hai",
+        "aaj deliver hoga", "ticket confirm ho gaya", "payment mil gaya hai", "account se debit"
+      ]
+    }
+  ]
+}
