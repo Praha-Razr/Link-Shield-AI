@@ -4,13 +4,23 @@ This guide documents how to deploy **LinkShield AI** in production with the **Fr
 
 ---
 
+## 🌐 Live Deployment Links
+
+* **Live Frontend (Vercel):** https://link-shield-ai-sand.vercel.app
+* **Live Backend Health Check (Render):** https://linkshield-backend-0s76.onrender.com/api/health
+* **Live Backend API Root:** https://linkshield-backend-0s76.onrender.com/api
+
+> **Note:** The backend runs on a free tier and may take about a minute to wake up on the first request; demo data reloads automatically after a restart.
+
+---
+
 ## 🏛️ Deployment Architecture Overview
 
 ```mermaid
 flowchart LR
-    Citizen["Citizen Browser"] -->|HTTPS| Vercel["Frontend (Vercel SPA)\nhttps://linkshield.vercel.app"]
+    Citizen["Citizen Browser"] -->|HTTPS| Vercel["Frontend (Vercel SPA)\nhttps://link-shield-ai-sand.vercel.app"]
     Officer["Officer Browser"] -->|HTTPS| Vercel
-    Vercel -->|REST API + Bearer Token\nCORS: FRONTEND_ORIGINS| Render["Backend API (Render Web Service)\nhttps://linkshield-backend.onrender.com"]
+    Vercel -->|REST API + Bearer Token\nCORS: FRONTEND_ORIGINS| Render["Backend API (Render Web Service)\nhttps://linkshield-backend-0s76.onrender.com"]
     Render --> SQLite[("Ephemeral SQLite Database\n(Auto-loads 44 demo cases)")]
     Render -.->|Optional API Calls| Gemini["Google Gemini API\n(Enhanced Mode / Fallback Basic)"]
 ```
@@ -58,7 +68,7 @@ Configure these under **Environment** in your Render dashboard:
 | :--- | :--- | :--- |
 | `ENVIRONMENT` | `production` | Enforces production mode and security checks |
 | `SECRET_KEY` | *(Generate a 32-byte hex key)* | **Required in production.** Must be strong random string (e.g. run `openssl rand -hex 32`) |
-| `FRONTEND_ORIGINS` | `https://your-app.vercel.app,http://localhost:5173` | Comma-separated list of allowed frontend origins for CORS |
+| `FRONTEND_ORIGINS` | `https://link-shield-ai-sand.vercel.app,http://localhost:5173` | Comma-separated list of allowed frontend origins for CORS |
 | `AUTO_LOAD_DEMO_DATA` | `true` | Automatically loads the 44 demo cases if the database is fresh |
 | `DEMO_MODE` | `true` | Enables demo dataset management features |
 | `GEMINI_API_KEY` | `your-gemini-api-key-here` | *(Optional)* If empty, backend boots and operates safely in Basic rule-based mode |
@@ -89,7 +99,7 @@ Vercel builds and hosts the React Vite Single-Page Application (SPA).
    - **Install Command:** `npm install`
 5. In **Environment Variables**, add:
    - **Name:** `VITE_API_BASE_URL`
-   - **Value:** `https://linkshield-backend.onrender.com/api` *(replace with your actual Render service URL, including `/api` without trailing slash)*
+   - **Value:** `https://linkshield-backend-0s76.onrender.com/api` *(your actual Render backend API URL, including `/api` without trailing slash)*
 6. Click **Deploy**.
 
 ### SPA Routing on Vercel
@@ -111,11 +121,11 @@ This ensures direct URLs (such as `/analyze/message`, `/cases`, `/radar`) reload
 ## Part 3: Linking Frontend & Backend
 
 Once both are deployed:
-1. Copy your Vercel URL (e.g. `https://link-shield-ai.vercel.app`).
+1. Copy your Vercel URL (`https://link-shield-ai-sand.vercel.app`).
 2. Go to your Render service -> **Environment**.
 3. Update `FRONTEND_ORIGINS` to include your Vercel URL:
    ```env
-   FRONTEND_ORIGINS=https://link-shield-ai.vercel.app,http://localhost:5173
+   FRONTEND_ORIGINS=https://link-shield-ai-sand.vercel.app,http://localhost:5173
    ```
 4. Save changes in Render (triggers a quick redeploy).
 
@@ -126,10 +136,10 @@ Once both are deployed:
 Test the live deployment against this verification checklist:
 
 1. **Health Check:**
-   - Open `https://<render-backend>/api/health` in your browser.
+   - Open `https://linkshield-backend-0s76.onrender.com/api/health` in your browser.
    - Verify it returns HTTP 200 with `{"status": "ok", "database": "connected"}`.
 2. **Deep-Link Refresh (SPA Rewrites):**
-   - In your browser, navigate directly to `https://<vercel-frontend>/login` or `https://<vercel-frontend>/analyze/message`.
+   - In your browser, navigate directly to `https://link-shield-ai-sand.vercel.app/login` or `https://link-shield-ai-sand.vercel.app/analyze/message`.
    - Press **F5 / Hard Refresh**. The page should render cleanly without 404 errors.
 3. **Citizen Mode & Analysis:**
    - Log in or test in Citizen mode.
@@ -157,13 +167,13 @@ Test the live deployment against this verification checklist:
 | :--- | :--- | :--- |
 | **Render Cold Starts** | The free Render web service spins down after 15 minutes of inactivity. | The first request after sleep may take ~30-50 seconds to respond. A friendly loading state or pinging `/api/health` wakes up the instance. |
 | **Ephemeral SQLite Storage** | Free Render instances have an ephemeral disk that resets upon redeployment or spin-down. | LinkShield includes `AUTO_LOAD_DEMO_DATA=true`, which automatically self-seeds the 44 synthetic demo cases whenever an empty database boots up. For persistent cloud storage, point `DATABASE_URL` to a persistent disk or hosted PostgreSQL database. |
-| **Cross-Script Fonts** | Linux cloud servers do not include Windows Nirmala UI. | LinkShield bundles open TrueType fonts (`NotoSansDevanagari-Regular.ttf` & `Bold.ttf`) in `backend/fonts/` so bilingual PDF reports render without glyph dropouts. |
+| **Cross-Script Fonts** | Linux cloud servers do not include Windows Nirmala UI. | LinkShield bundles open TrueType fonts (`NotoSans-Regular.ttf`, `NotoSans-Bold.ttf`, `NotoSansDevanagari-Regular.ttf` & `NotoSansDevanagari-Bold.ttf`) in `backend/fonts/` so bilingual PDF reports render without glyph dropouts. |
 | **Gemini Free-Tier Rate Limits** | External Gemini API calls may experience rate limits under high query volume. | LinkShield implements a 10-second timeout for analysis calls and a 20-second timeout for assistant chat, gracefully and transparently falling back to 100% offline rule-based Basic mode. |
 
 ---
 
-## 👥 Demo Credentials (Synthetic Test Data)
+## 👥 Demo Credentials (Demo only, synthetic data)
 
-- **Officer Demo:** `officer_sharma` / `Officer@Shield2026`
-- **Admin Demo:** `admin_cyber` / `Admin@Shield2026`
-- **Citizen Demo:** `citizen_demo` / `Citizen@Shield2026` *(Citizens can also self-register directly)*
+- **Officer Demo:** `officer_sharma` / `Officer@Shield2026` *(demo only, synthetic data)*
+- **Admin Demo:** `admin_cyber` / `Admin@Shield2026` *(demo only, synthetic data)*
+- **Citizen Demo:** `citizen_demo` / `Citizen@Shield2026` *(demo only, synthetic data — Citizens can also self-register directly)*

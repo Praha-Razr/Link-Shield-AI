@@ -25,15 +25,17 @@
 
 ## 🌐 Deployed Version (Live Cloud Demo)
 
-LinkShield AI is configured for cloud deployment with the frontend on Vercel and the backend on Render.
+LinkShield AI is deployed live on the cloud with the frontend on Vercel and the backend on Render.
 
-* **Live Web Portal (Vercel):** `https://your-app.vercel.app` *(Placeholder - update with your deployed URL)*
-* **Backend API & Health Check (Render):** `https://your-backend.onrender.com/api/health` *(Placeholder - update with your deployed URL)*
+* **Live Web Portal (Vercel):** https://link-shield-ai-sand.vercel.app
+* **Backend API & Health Check (Render):** https://linkshield-backend-0s76.onrender.com/api/health
 * **Deployment Guide:** See [DEPLOYMENT.md](file:///c:/My_Files/LinkShield/DEPLOYMENT.md) for full step-by-step setup and environment configuration.
 
-> **Evaluation Credentials (Demo Only, Synthetic Data):**
-> * **Officer Workstation:** Username `officer_sharma` / Password `Officer@Shield2026`
-> * **Citizen Portal:** Username `citizen_demo` / Password `Citizen@Shield2026` *(or click "Sign Up" to create a new citizen account)*
+> **Note:** The backend runs on a free tier and may take about a minute to wake up on the first request; demo data reloads automatically after a restart.
+
+> **Evaluation Credentials (Demo only, synthetic data):**
+> * **Officer Workstation:** Username `officer_sharma` / Password `Officer@Shield2026` *(demo only, synthetic data)*
+> * **Citizen Portal:** Username `citizen_demo` / Password `Citizen@Shield2026` *(demo only, synthetic data — or click "Sign Up" to create a new citizen account)*
 > 
 > *Note: These credentials access an isolated, synthetic evaluation dataset. Citizen and Officer operational interfaces and permissions are strictly enforced on the server.*
 
@@ -281,7 +283,7 @@ Follow this step-by-step walkthrough to evaluate LinkShield AI:
    * Emergency action button to dial Cyber Helpline `1930`.
 
 ### Step 2: Officer Evaluates Syndicate Campaign Graph (1 min)
-1. Sign in as **Officer** (e.g. `officer_sharma` / `Officer@Shield2026`).
+1. Sign in as **Officer** (e.g. `officer_sharma` / `Officer@Shield2026` — demo only, synthetic data).
 2. Navigate to **"Scam Graph"** (`/intelligence/graph`).
 3. View the **Campaign Intelligence Radar**.
 4. In the left **Detected Syndicates** drawer, click on `#1 SYNDICATE: demo-scam.test (15 linked cases)`.
@@ -327,10 +329,10 @@ LINKSHIELD AI implements secure, role-based access control with real user authen
   * **Citizen Data Isolation:** Citizen analysis endpoints enforce strict isolation; `similarity_matches` are cleared (`[]`) for citizens so no other users' case IDs or data are disclosed.
   * **Aggregate Scam Awareness:** Citizen dashboard queries aggregate metrics and category trends (`GET /api/public/awareness`), never exposing individual phone numbers, UPI IDs, emails, domains, or case records.
 
-* **Default Seed Accounts (`backend/seed_users.py`) — Demo Only, Synthetic Data:**
-  * **Officer Account:** `officer_sharma` / `Officer@Shield2026` *(Demo only, synthetic data)*
-  * **Admin Account:** `admin_cyber` / `Admin@Shield2026` *(Demo only, synthetic data)*
-  * **Citizen Account:** `citizen_demo` / `Citizen@Shield2026` *(Demo only, synthetic data — Citizens can also self-register directly via the portal)*
+* **Default Seed Accounts (`backend/seed_users.py`) — Demo only, synthetic data:**
+  * **Officer Account:** `officer_sharma` / `Officer@Shield2026` *(demo only, synthetic data)*
+  * **Admin Account:** `admin_cyber` / `Admin@Shield2026` *(demo only, synthetic data)*
+  * **Citizen Account:** `citizen_demo` / `Citizen@Shield2026` *(demo only, synthetic data — Citizens can also self-register directly via the portal)*
   > **Note:** These credentials operate on purely synthetic test datasets. Citizen and Officer operational interfaces and permissions are strictly enforced on the server.
 
 ---
